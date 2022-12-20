@@ -4,3 +4,9 @@
 - DB : MYSQL 5.7.40
 - Framework : django 4.1
 - python : 3.9
+
+## 2일차
+- requirements
+- 테이블 수정
+- 가계부 CRUD
+- 북마크
