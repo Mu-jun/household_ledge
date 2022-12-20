@@ -8,22 +8,11 @@
 from django.db import models
 
 
-class Bookmark(models.Model):
-    id = models.BigIntegerField(primary_key=True)
-    member_id = models.BigIntegerField()
-    amount = models.IntegerField()
-    memo = models.CharField(max_length=1000)
-
-    class Meta:
-        managed = False
-        db_table = 'bookmark'
-
-
-class Householdledge(models.Model):
-    id = models.BigIntegerField(primary_key=True)
+class HouseholdLedge(models.Model):
+    id = models.BigAutoField(primary_key=True)
     member_id = models.BigIntegerField()
     date = models.DateTimeField()
-    amout = models.IntegerField()
+    amount = models.IntegerField()
     memo = models.CharField(max_length=1000)
 
     class Meta:
@@ -32,8 +21,8 @@ class Householdledge(models.Model):
 
 
 class Member(models.Model):
-    id = models.BigIntegerField(primary_key=True)
-    email = models.CharField(max_length=100)
+    id = models.BigAutoField(primary_key=True)
+    email = models.CharField(unique=True, max_length=100)
     password = models.CharField(max_length=250)
 
     class Meta:
@@ -41,8 +30,8 @@ class Member(models.Model):
         db_table = 'member'
 
 
-class Shorturl(models.Model):
-    short_url = models.CharField(primary_key=True, max_length=25)
+class ShortUrl(models.Model):
+    short_url = models.CharField(primary_key=True, max_length=20)
     target_url = models.CharField(max_length=2100)
     expire_date = models.DateTimeField()
 

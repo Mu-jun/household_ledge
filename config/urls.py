@@ -20,5 +20,6 @@ import hl
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("hl/", include("hl.urls"))
+    path("hl/", include("hl.urls")),
+    path("bookmark/", include("bookmark.urls")),
 ]
