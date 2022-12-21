@@ -1,14 +1,27 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
+from rest_framework.response import Response
 from rest_framework import status, serializers
 from rest_framework.decorators import api_view
-from rest_framework.response import Response
 from .serializers import HLSerializer
 from hl.models import HouseholdLedge
+from utils import jwt_util
+from datetime import datetime
+import jwt
 
 # Create your views here.
 @api_view(['GET'])
+@jwt_util.verify_access
 def index(req):
-    member_id = 1
+    access_token = req.COOKIES["jwt"]
+    # try:
+    #     payload = jwt_util.verify(access_token)
+    # except jwt.ExpiredSignatureError: #시간만료
+    #     return redirect('refresh')
+    # except jwt.InvalidTokenError: #유효하지 않은 토큰
+    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
+    payload = jwt_util.verify(access_token)
+    member_id = payload["id"]
     
     hl_list = HouseholdLedge.objects.filter(member_id=member_id)
     
@@ -16,15 +29,39 @@ def index(req):
     return Response(data.data)
 
 @api_view(['GET'])
+@jwt_util.verify_access
 def detail(req, id):
-    hl = get_object_or_404(HouseholdLedge, pk=id)
+    access_token = req.COOKIES["jwt"]
+    # try:
+    #     payload = jwt_util.verify(access_token)
+    # except jwt.ExpiredSignatureError: #시간만료
+    #     return redirect('refresh')
+    # except jwt.InvalidTokenError: #유효하지 않은 토큰
+    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
     
-    data = HLSerializer(hl)
-    return Response(data.data)
+    payload = jwt_util.verify(access_token)
+    member_id = payload["id"]
+    
+    hl = get_object_or_404(HouseholdLedge, pk=id)
+    if member_id == hl.member_id:
+        data = HLSerializer(hl)
+        return Response(data.data)
+    else:
+        Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['POST'])
+@jwt_util.verify_access
 def add(req):
-    member_id = 1
+    access_token = req.COOKIES["jwt"]
+    # try:
+    #     payload = jwt_util.verify(access_token)
+    # except jwt.ExpiredSignatureError: #시간만료
+    #     return redirect('refresh')
+    # except jwt.InvalidTokenError: #유효하지 않은 토큰
+    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
+    payload = jwt_util.verify(access_token)
+    member_id = payload["id"]
     
     req.data.member_id = member_id
     data = HLSerializer(data=req.data)
@@ -35,8 +72,18 @@ def add(req):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['POST'])
+@jwt_util.verify_access
 def edit(req, id):
-    member_id = 1
+    access_token = req.COOKIES["jwt"]
+    # try:
+    #     payload = jwt_util.verify(access_token)
+    # except jwt.ExpiredSignatureError: #시간만료
+    #     return redirect('refresh')
+    # except jwt.InvalidTokenError: #유효하지 않은 토큰
+    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
+    payload = jwt_util.verify(access_token)
+    member_id = payload["id"]
 
     hl = get_object_or_404(HouseholdLedge,pk=id)
     if hl.member_id == member_id:
@@ -51,8 +98,18 @@ def edit(req, id):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
+@jwt_util.verify_access
 def delete(req, id):
-    member_id = 1
+    access_token = req.COOKIES["jwt"]
+    # try:
+    #     payload = jwt_util.verify(access_token)
+    # except jwt.ExpiredSignatureError: #시간만료
+    #     return redirect('refresh')
+    # except jwt.InvalidTokenError: #유효하지 않은 토큰
+    #     return Response(status=status.HTTP_401_UNAUTHORIZED)
+    
+    payload = jwt_util.verify(access_token)
+    member_id = payload["id"]
 
     hl = get_object_or_404(HouseholdLedge,pk=id)
     if hl.member_id == member_id:
@@ -60,3 +117,33 @@ def delete(req, id):
         return Response(status=status.HTTP_202_ACCEPTED)
     else:
         return Response(status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(['GET','POST'])
+def share(req, url_key):
+    if req.method == "GET":
+        hl = get_object_or_404(HouseholdLedge,url_key=url_key)
+        if hl.url_key_expire_date < datetime.now():
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        date = HLSerializer(hl)
+        return Response(date.data)
+    
+    if req.method == "POST":
+        access_token = req.COOKIES["jwt"]
+        try:
+            payload = jwt_util.verify(access_token)
+        except jwt.ExpiredSignatureError: #시간만료
+            return redirect('refresh')
+        except jwt.InvalidTokenError: #유효하지 않은 토큰
+            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        
+        member_id = payload["id"]
+        hl = get_object_or_404(HouseholdLedge,url_key=url_key)
+        
+        if hl.member_id == member_id:
+            url_key_expire_date = req.POST["url_key_expire_date"]
+            hl.url_key_expire_date = url_key_expire_date
+            hl.save()
+            return Response()
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)

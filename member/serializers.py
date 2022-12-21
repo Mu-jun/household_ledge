@@ -1,8 +1,8 @@
 from django.db.models import fields
 from rest_framework import serializers
-from .models import HouseholdLedge
+from .models import Member
 
-class HLSerializer(serializers.ModelSerializer):
+class MemberSerializer(serializers.ModelSerializer):
     class Meta:
-        model = HouseholdLedge
+        model = Member
         fields = "__all__"

@@ -16,10 +16,9 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-import hl
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("hl/", include("hl.urls")),
     path("bookmark/", include("bookmark.urls")),
+    path("member/", include("member.urls")),
 ]

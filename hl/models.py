@@ -7,34 +7,15 @@
 # Feel free to rename the models, but don't rename db_table values or field names.
 from django.db import models
 
-
 class HouseholdLedge(models.Model):
     id = models.BigAutoField(primary_key=True)
     member_id = models.BigIntegerField()
     date = models.DateTimeField()
-    amount = models.IntegerField()
+    amout = models.IntegerField()
     memo = models.CharField(max_length=1000)
+    url_key = models.CharField(unique=True, max_length=25)
+    url_key_expire_date = models.DateTimeField()
 
     class Meta:
         managed = False
         db_table = 'householdledge'
-
-
-class Member(models.Model):
-    id = models.BigAutoField(primary_key=True)
-    email = models.CharField(unique=True, max_length=100)
-    password = models.CharField(max_length=250)
-
-    class Meta:
-        managed = False
-        db_table = 'member'
-
-
-class ShortUrl(models.Model):
-    short_url = models.CharField(primary_key=True, max_length=20)
-    target_url = models.CharField(max_length=2100)
-    expire_date = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'shorturl'
