@@ -29,13 +29,15 @@ def verify_access(func):
     
     @wraps(func)
     def wrapper_function(req, *args, **kwargs):
-        access_token = req.COOKIES["jwt"]
         try:
+            access_token = req.COOKIES["jwt"]
             verify(access_token)
         except jwt.ExpiredSignatureError: #시간만료
             return redirect('refresh')
-        except jwt.InvalidTokenError: #유효하지 않은 토큰
-            return Response(status=status.HTTP_401_UNAUTHORIZED)
+        except Exception:
+            res = redirect('member:sign_in')
+            res.status_code = status.HTTP_401_UNAUTHORIZED
+            return res
         return func(req, *args, **kwargs)
     
     return wrapper_function

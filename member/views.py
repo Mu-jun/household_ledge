@@ -15,12 +15,12 @@ def sign_up(req):
     email = req.POST["email"]
     password = req.POST["password"]
     
-    member = get_object_or_404(Member, email=email)
+    member = Member.objects.filter(email=email).first()
     if(member):
         return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
     
     hashed_pw = encrytion.make_hashed_pw(password)
-    Member.objects.create({"email":email, "password":hashed_pw})
+    Member.objects.create(email=email, password=hashed_pw)
     
     return Response(status=status.HTTP_201_CREATED)
 
@@ -29,9 +29,7 @@ def sign_in(req):
     email = req.POST["email"]
     password = req.POST["password"]
     
-    member = Member.objects.get(email=email)
-    if member is None:
-        return Response(status=status.HTTP_404_NOT_FOUND)
+    member = get_object_or_404(Member, email=email)
     
     hashed_pw = encrytion.make_hashed_pw(password)
     if member.password == hashed_pw:
@@ -46,13 +44,20 @@ def sign_in(req):
     else:
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
+@jwt_util.verify_access
+@api_view(["GET"])
 def sign_out(req):
     res = Response()
     res.delete_cookie("jwt")
     del req.session["jwt"]
     return res
 
+@jwt_util.verify_access
+@api_view(["GET"])
 def refresh(req):
+    is_redirect = req.META.get('HTTP_REFERER')
+    if is_redirect is None:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     refresh_token = req.session["jwt"]
     try:
         payload = jwt_util.verify(refresh_token)

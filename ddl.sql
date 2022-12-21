@@ -6,7 +6,7 @@ CREATE TABLE `HouseholdLedge`
     `id`    bigint UNSIGNED NOT NULL AUTO_INCREMENT,
     `member_id`    bigint NOT NULL,
     `date`    datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    `amout`    int DEFAULT 0 NOT NULL,
+    `amount`    int DEFAULT 0 NOT NULL,
     `memo`    varchar(1000) DEFAULT '' NOT NULL,
     `url_key`    varchar(25) NOT NULL,
     `url_key_expire_date`    DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
