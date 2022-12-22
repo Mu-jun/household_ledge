@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 class Bookmark(models.Model):
     id = models.BigAutoField(primary_key=True)
-    member_id = models.BigIntegerField()
+    member_id = models.PositiveBigIntegerField()
     amount = models.IntegerField()
     memo = models.CharField(max_length=1000)
 

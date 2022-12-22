@@ -31,7 +31,9 @@ def verify_access(func):
     def wrapper_function(req, *args, **kwargs):
         try:
             access_token = req.COOKIES["jwt"]
-            verify(access_token)
+            payload = verify(access_token)
+            # req.GET.update({"member_id":payload["id"]})
+            # req.data["id"] = payload["id"]
         except jwt.ExpiredSignatureError: #시간만료
             return redirect('refresh')
         except Exception:

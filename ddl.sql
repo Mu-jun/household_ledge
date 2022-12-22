@@ -4,11 +4,11 @@ use HouseholdLedge;
 CREATE TABLE `HouseholdLedge`
 (
     `id`    bigint UNSIGNED NOT NULL AUTO_INCREMENT,
-    `member_id`    bigint NOT NULL,
+    `member_id`    bigint UNSIGNED NOT NULL,
     `date`    datetime DEFAULT CURRENT_TIMESTAMP NOT NULL,
     `amount`    int DEFAULT 0 NOT NULL,
     `memo`    varchar(1000) DEFAULT '' NOT NULL,
-    `url_key`    varchar(25) NOT NULL,
+    `url_key`    varchar(25),
     `url_key_expire_date`    DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
  PRIMARY KEY ( `id` )
 );
@@ -23,7 +23,7 @@ CREATE UNIQUE INDEX `HouseholdLedge_UK` ON `HouseholdLedge`
 CREATE TABLE `Bookmark`
 (
     `id`    bigint UNSIGNED NOT NULL AUTO_INCREMENT,
-    `member_id`    bigint NOT NULL,
+    `member_id`    bigint UNSIGNED NOT NULL,
     `amount`    int NOT NULL,
     `memo`    varchar(1000) NOT NULL,
  PRIMARY KEY ( `id` )

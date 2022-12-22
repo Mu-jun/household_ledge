@@ -7,7 +7,7 @@ from hashlib import blake2b
 from base64 import b64encode
 from env import config
 
-def maeke_hash_key(data):
+def make_hash_key(data):
     hashed = blake2b(data.encode(), key=config.HASH_KEY, digest_size=6)
     b64 = b64encode(hashed.digest())
     return b64.decode()
@@ -17,7 +17,7 @@ def make_hashed_pw(password):
     return hashed.hexdigest()
 
 if __name__ == "__main__":
-    hash_key = maeke_hash_key("asdf")
+    hash_key = make_hash_key("asdf")
     print(hash_key)
     hashed_pw = make_hashed_pw("qwer")
     print(hashed_pw)
