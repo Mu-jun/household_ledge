@@ -1,7 +1,7 @@
 from django.test import TestCase
 from .serializers import MemberSerializer
 from .models import Member
-from utils import encrytion
+from utils import encrytion, jwt_util
 from datetime import datetime, timedelta
 
 TEST_DATA1 = {"email":"dev@email.com", "password":"123"}
